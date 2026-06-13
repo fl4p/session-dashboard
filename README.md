@@ -95,16 +95,21 @@ worked nginx + HTTPS + basic-auth example.
 
 ## Tests
 
-Browser-level regression tests use Playwright; unit/server tests use pytest.
+Tests live in `tests/`. Browser-level regression tests use Playwright;
+unit/server tests use pytest; a few pure-JS checks run under `node`. Run from the
+repo root (a `tests/conftest.py` puts the root on `sys.path` so the suites can
+import `serve` and the `tile_harness`/`dashboard_fixture` helpers, which stay at
+the root alongside `serve.py`).
 
 ```sh
 python3 -m venv .venv-test && . .venv-test/bin/activate
 pip install pytest playwright && playwright install chromium
-pytest test_serve.py
+pytest tests/                      # or: pytest tests/test_serve.py
+node tests/test_term_bell.js       # JS-only checks (.js / .mjs)
 ```
 
-(Several `test_tile_*` / `test_*_browser.py` suites drive a headless Chromium
-against a live `serve.py`.)
+(Several `tests/test_tile_*` / `tests/test_*_browser.py` suites drive a headless
+Chromium against a live `serve.py`.)
 
 ## Layout
 

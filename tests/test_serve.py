@@ -27,7 +27,7 @@ import unittest.mock as mock
 import urllib.parse
 import urllib.request
 
-HERE = os.path.dirname(os.path.abspath(__file__))
+HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # repo root (this file lives in tests/)
 SERVE = os.path.join(HERE, "serve.py")
 
 # Import serve.py in-process for unit tests of its registry logic (read_sessions
@@ -463,7 +463,12 @@ class RegistryLogicTest(unittest.TestCase):
         os.utime(os.path.join(proj, mine + ".jsonl"), (t0 - 100, t0 - 100))
         os.utime(os.path.join(proj, other + ".jsonl"), (t0, t0))
         extra = {"session_id": mine} if record_session_id else {}
-        self._write("container-1", kind="container", cwd=cwd, **extra)
+        # Container tiles relaunch via the launcher recorded at spawn time, so
+        # fork needs one on the registry entry (no hardcoded fallback anymore).
+        launcher = os.path.join(cwd, "container-launcher")
+        with open(launcher, "w") as f:
+            f.write("#!/bin/sh\n")
+        self._write("container-1", kind="container", cwd=cwd, launcher=launcher, **extra)
         return cwd, proj, mine, other
 
     def test_fork_uses_session_id_not_newest_sibling(self):
@@ -1014,7 +1019,9 @@ class NewTileKindsTest(unittest.TestCase):
         with open(jsonl, "w") as f:
             f.write('{"type":"mode","sessionId":"' + old + '"}\n')
             f.write('{"type":"msg","sessionId":"' + old + '","text":"hi"}\n')
-        self._write_host("host-99", port=1, cwd=d)
+        # Host tiles relaunch via their recorded launcher command; without one
+        # (and no HOST_LAUNCH_CMD) fork bails, so record a command on the tile.
+        self._write_host("host-99", port=1, cwd=d, command="claude")
         # Stub Popen — fork_session would otherwise try to launch the host launcher.
         calls = []
         orig = serve.subprocess.Popen
@@ -1756,7 +1763,7 @@ class TermClientScrollbackTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        here = os.path.dirname(os.path.abspath(__file__))
+        here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # repo root (tests/ is one level down)
         # term-client.js is the source; term.html is the inlined production build.
         # Both must satisfy the contract so a rebuild can't silently regress.
         with open(os.path.join(here, "term-client.js")) as f:
@@ -1829,7 +1836,7 @@ class TermClientScrollbackTest(unittest.TestCase):
                              "on screen (bottom-UI duplication hazard)" % label)
             self.assertRegex(src, r"setTimeout\(_repaintWiggle",
                              "%s: wiggle must be scheduled after socket open" % label)
-        here = os.path.dirname(os.path.abspath(__file__))
+        here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # repo root (tests/ is one level down)
         with open(os.path.join(here, "serve.py")) as f:
             dash = f.read()
         self.assertNotRegex(dash, r"clientHeight\s*-\s*48",
@@ -1853,7 +1860,7 @@ class TermClientScrollbackTest(unittest.TestCase):
                 self.assertRegex(
                     src, r"addEventListener\('%s', *_signalUserGesture" % ev,
                     "%s: client must signal user-gesture on %s" % (label, ev))
-        here = os.path.dirname(os.path.abspath(__file__))
+        here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # repo root (tests/ is one level down)
         with open(os.path.join(here, "serve.py")) as f:
             dash = f.read()
         self.assertRegex(dash, r"if \(d\.key === 'user-gesture'\) releasePin\(\);",
@@ -2851,7 +2858,7 @@ class KeybindingsTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        here = os.path.dirname(os.path.abspath(__file__))
+        here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # repo root (tests/ is one level down)
         with open(os.path.join(here, "serve.py")) as f:
             cls.serve = f.read()
         with open(os.path.join(here, "term-client.js")) as f:
@@ -4009,7 +4016,7 @@ class FontPickerTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        here = os.path.dirname(os.path.abspath(__file__))
+        here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # repo root (tests/ is one level down)
         with open(os.path.join(here, "serve.py")) as f:
             cls.serve = f.read()
         with open(os.path.join(here, "term-client.js")) as f:
@@ -4131,7 +4138,7 @@ class FontPickerTest(unittest.TestCase):
         # build-term.sh FACES (the term.html inliner) must mirror
         # serve._FONT_FACES exactly, or the dashboard chrome and the terminal
         # tiles would embed different faces and the picker would be inconsistent.
-        here = os.path.dirname(os.path.abspath(__file__))
+        here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # repo root (tests/ is one level down)
         with open(os.path.join(here, "build-term.sh")) as f:
             build = f.read()
         m = re.search(r"FACES=\((.*?)\n\)", build, re.S)
@@ -6208,7 +6215,7 @@ class SearchExportTest(unittest.TestCase):
         # the default is a fixed, normalized repo-relative path.
         self.assertRegex(self.serve,
             r"CHAT_EXPORT_SCRIPT\s*=\s*os\.environ\.get\(\s*[\"']CHAT_EXPORT_SCRIPT[\"']\s*\)"
-            r"\s*or\s*os\.path\.normpath",
+            r"\s*or\s*os\.path\.join",
             "export script path must be a startup constant (env override OR a fixed "
             "normalized default) — never request-derived")
         self.assertRegex(self.serve,

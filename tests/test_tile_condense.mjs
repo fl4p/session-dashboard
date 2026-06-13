@@ -32,7 +32,7 @@ import url from 'url';
 import assert from 'assert';
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
-const serveSrc = fs.readFileSync(path.join(__dirname, 'serve.py'), 'utf8');
+const serveSrc = fs.readFileSync(path.join(__dirname, '..', 'serve.py'), 'utf8');
 
 // Pull the main dashboard stylesheet: the <style>…</style> block that carries
 // the condense rules (serve.py has several embedded page templates, so we pick

@@ -57,9 +57,9 @@ if (!Terminal) {
   process.exit(0);
 }
 
-const src = fs.readFileSync(path.join(__dirname, 'term-client.js'), 'utf8');
+const src = fs.readFileSync(path.join(__dirname, '..', 'term-client.js'), 'utf8');
 const scrape = new Function('term', extractFn(src, '_scrapeSuggestion') + '\nreturn _scrapeSuggestion();');
-const raw = fs.readFileSync(path.join(__dirname, 'testdata', 'claude_input_box.cast'));
+const raw = fs.readFileSync(path.join(__dirname, '..', 'testdata', 'claude_input_box.cast'));
 
 // 1. With the dim placeholder live in the buffer, the scraper extracts it.
 {

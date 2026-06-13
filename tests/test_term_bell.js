@@ -18,7 +18,7 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 
-const src = fs.readFileSync(path.join(__dirname, 'term-client.js'), 'utf8');
+const src = fs.readFileSync(path.join(__dirname, '..', 'term-client.js'), 'utf8');
 const START = '// --- prompt-detection bell ---';
 const END = '// --- end prompt-detection bell ---';
 const s = src.indexOf(START), e = src.indexOf(END);

@@ -39,7 +39,7 @@ function extractFn(src, name) {
   return src.slice(s, end);
 }
 
-const serveSrc = fs.readFileSync(path.join(__dirname, 'serve.py'), 'utf8');
+const serveSrc = fs.readFileSync(path.join(__dirname, '..', 'serve.py'), 'utf8');
 const fnSrc = extractFn(serveSrc, 'placeNewInOrder');
 
 // Build a callable that runs the extracted function with injected globals.
