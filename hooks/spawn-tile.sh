@@ -1,5 +1,5 @@
 #!/bin/sh
-# Agent spawns a NEW session-dashboard tile (terminal, claude, opencode, note,
+# Agent spawns a NEW tilemux tile (terminal, claude, opencode, note,
 # webview, channel). Token-authed like close-tile.sh / msg-tile.sh.
 #
 # Usage:

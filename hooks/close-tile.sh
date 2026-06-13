@@ -1,5 +1,5 @@
 #!/bin/sh
-# Ask the session dashboard to close the tile this agent is running in (or
+# Ask the tilemux dashboard to close the tile this agent is running in (or
 # --stash to hide it without ending the process). Mirrors dashboard-notify.sh:
 # authenticates with the registry-scoped .hook-token, and lets the SERVER work
 # out WHICH tile to close from this script's process ancestry ($$ walks up to
@@ -13,7 +13,7 @@
 # session that isn't dashboard-managed is unaffected.
 D="${CLAUDE_SESSIONS_DIR:-$HOME/.claude-sessions}"
 T=$(cat "$D/.hook-token" 2>/dev/null)
-[ -n "$T" ] || { echo "session dashboard not running (no hook token); nothing to close"; exit 0; }
+[ -n "$T" ] || { echo "tilemux dashboard not running (no hook token); nothing to close"; exit 0; }
 P=$(cat "$D/.hook-port" 2>/dev/null)
 STASH=0
 [ "$1" = "--stash" ] && STASH=1

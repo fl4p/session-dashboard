@@ -1,4 +1,4 @@
-# session-dashboard
+# tilemux
 
 > ⚠️ **Early draft.** Extracted from a personal monorepo and lightly cleaned up
 > for publishing. Expect rough edges, sparse docs, and assumptions baked in from
@@ -32,18 +32,18 @@ The **+ New** menu is driven by configurable launcher presets — each a raw
 command line (`claude`, `claude --dangerously-skip-permissions`, `codex`,
 `opencode`, or any custom command) with optional per-launcher env vars. Presets
 are edited from the dashboard's "Manage launchers…" modal and persisted as plain
-JSON at `~/.config/session-dashboard/launchers.json` (override with
+JSON at `~/.config/tilemux/launchers.json` (override with
 `LAUNCHERS_CONFIG`). A missing file falls back to sensible defaults
 (claude/codex/opencode), so first run just works.
 
 A preset can point an agent at a custom endpoint via its env vars
 (`ANTHROPIC_BASE_URL`, `OPENAI_BASE_URL`, …), or use `"provider": "vertex"` to
 route Claude through **Google Vertex AI** (gcloud Application Default
-Credentials + `~/.config/session-dashboard/vertex.json`, override with
+Credentials + `~/.config/tilemux/vertex.json`, override with
 `VERTEX_CONFIG`). Set your GCP project via that file or
 `ANTHROPIC_VERTEX_PROJECT_ID` — there is no project baked into the code.
 
-These config files live under `~/.config/session-dashboard/` and are
+These config files live under `~/.config/tilemux/` and are
 `.gitignore`d, so your project ids / endpoints never end up in the repo.
 
 ## Chat history & search

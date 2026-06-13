@@ -1,5 +1,5 @@
 #!/bin/sh
-# List all active session-dashboard tiles with their REAL conversation titles
+# List all active tilemux tiles with their REAL conversation titles
 # (first user message / summary from the transcript), not just the cwd basename.
 # No auth needed for the JSON — but the title-enriched endpoint is token-gated,
 # so we send the hook token when we have it (falls back to /api/sessions).

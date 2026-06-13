@@ -1,5 +1,5 @@
 #!/bin/sh
-# Forward a Claude Code hook event (the stdin JSON) to the session dashboard's
+# Forward a Claude Code hook event (the stdin JSON) to the tilemux dashboard's
 # /api/hook-event, giving the chat panel ground-truth busy/idle (Stop,
 # UserPromptSubmit, Pre/PostToolUse) and pending permission prompts
 # (Notification) that the transcript .jsonl never records.

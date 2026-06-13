@@ -1,5 +1,5 @@
 #!/bin/sh
-# Send a message INTO another session-dashboard tile's claude prompt, addressed
+# Send a message INTO another tilemux tile's claude prompt, addressed
 # by its tile NAME (or sid). Token-authed like close-tile.sh; the dashboard
 # resolves the name and injects the text via chat_send, so it arrives as one
 # prompt and wakes the peer even if it's sitting idle (a channel poll can't do
@@ -13,7 +13,7 @@
 # the exact one and retry with its id).
 D="${CLAUDE_SESSIONS_DIR:-$HOME/.claude-sessions}"
 T=$(cat "$D/.hook-token" 2>/dev/null)
-[ -n "$T" ] || { echo "session dashboard not running (no hook token)"; exit 1; }
+[ -n "$T" ] || { echo "tilemux dashboard not running (no hook token)"; exit 1; }
 P=$(cat "$D/.hook-port" 2>/dev/null)
 TO="$1"; shift 2>/dev/null
 MSG="$*"

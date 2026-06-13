@@ -1,4 +1,4 @@
-# Deploying session-dashboard behind nginx (HTTPS + basic auth)
+# Deploying tilemux behind nginx (HTTPS + basic auth)
 
 This documents how the dashboard is served remotely on a server behind an nginx
 reverse proxy with TLS and HTTP basic auth, and how to reproduce it for future
@@ -90,13 +90,13 @@ runtime: `serve.py`, `term.html`, `fonts/`. Also copy `term-client.js`,
 server.
 
 ```bash
-# from a dev checkout of session-dashboard/
+# from a dev checkout of tilemux/
 rsync -az serve.py term.html term-client.js build-term.sh image-decode-shim.js fonts \
       SERVER:/home/USER/sd-staging/
 ssh SERVER '
-  sudo install -d -o USER -g USER /home/USER/session-dashboard
-  sudo cp -r /home/USER/sd-staging/. /home/USER/session-dashboard/
-  sudo chown -R USER:USER /home/USER/session-dashboard
+  sudo install -d -o USER -g USER /home/USER/tilemux
+  sudo cp -r /home/USER/sd-staging/. /home/USER/tilemux/
+  sudo chown -R USER:USER /home/USER/tilemux
 '
 ```
 
@@ -107,18 +107,18 @@ you edit `term-client.js`, re-run `./build-term.sh` and re-copy `term.html`.
 
 ## 4. systemd service
 
-`/etc/systemd/system/session-dashboard.service`:
+`/etc/systemd/system/tilemux.service`:
 
 ```ini
 [Unit]
-Description=Claude session dashboard (behind nginx /dash, https + basic auth)
+Description=Claude tilemux dashboard (behind nginx /dash, https + basic auth)
 After=network.target
 
 [Service]
 Type=simple
 User=dashuser
 Group=dashuser
-WorkingDirectory=/home/dashuser/session-dashboard
+WorkingDirectory=/home/dashuser/tilemux
 Environment=DASHBOARD_BASE=/dash
 # PATH MUST include the user's ~/.local/bin (where `claude` installs) and /snap/bin
 # — serve.py's _which() resolves claude/opencode/ttyd from PATH. Omitting
@@ -130,7 +130,7 @@ Environment=PATH=/home/dashuser/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/s
 # control-group kill nukes every live terminal on any restart.
 KillMode=process
 # Binds 127.0.0.1:7680 only; nginx terminates TLS + basic auth in front of it.
-ExecStart=/usr/bin/python3 /home/dashuser/session-dashboard/serve.py 7680 --no-open
+ExecStart=/usr/bin/python3 /home/dashuser/tilemux/serve.py 7680 --no-open
 Restart=on-failure
 RestartSec=2
 
@@ -140,8 +140,8 @@ WantedBy=multi-user.target
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable --now session-dashboard
-systemctl is-active session-dashboard            # active
+sudo systemctl enable --now tilemux
+systemctl is-active tilemux            # active
 ss -ltnp | grep :7680                            # 127.0.0.1:7680
 ```
 
@@ -154,7 +154,7 @@ Omit the `DASHBOARD_BASE` line to serve at the origin root.
 > isn't found (or podman/the container launcher isn't set up) — and the frontend shows **no
 > error**, so it just looks like nothing happened. If a tile doesn't appear,
 > check the binary is on the service PATH (`sudo -u dashuser env PATH=… which claude`)
-> and watch `journalctl -u session-dashboard`.
+> and watch `journalctl -u tilemux`.
 
 ---
 
@@ -269,7 +269,7 @@ grid, and the terminal tile should be interactive (keystrokes echo).
 | URL | `https://dashboard.example.com/dash/` |
 | Service user | `dashuser` |
 | Dashboard bind | `127.0.0.1:7680` (`DASHBOARD_BASE=/dash`) |
-| systemd unit | `session-dashboard.service` |
+| systemd unit | `tilemux.service` |
 | Basic auth | user `dashuser` (password stored out-of-band; regenerate per §5) |
 | htpasswd file | `/etc/nginx/.htpasswd-dashboard` |
 | nginx vhost | `/dash/` location added to the `dashboard.example.com` 443 server in `sites-enabled/default` |

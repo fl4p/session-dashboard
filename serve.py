@@ -145,7 +145,7 @@ MAX_DROP_BYTES = 100 * 1024 * 1024
 # (ANTHROPIC_VERTEX_PROJECT_ID / CLOUD_ML_REGION / ANTHROPIC_MODEL) > file > the
 # built-in default below.
 VERTEX_CONFIG_PATH = os.environ.get("VERTEX_CONFIG") or os.path.expanduser(
-    "~/.config/session-dashboard/vertex.json")
+    "~/.config/tilemux/vertex.json")
 VERTEX_DEFAULTS = {
     "project_id": "",
     "region": "eu",
@@ -207,7 +207,7 @@ def _vertex_child_env():
 # generic kind=custom tile. Stored as plain JSON so it survives restarts and is
 # editable from the dashboard's "Manage launchers…" modal.
 LAUNCHERS_CONFIG_PATH = os.environ.get("LAUNCHERS_CONFIG") or os.path.expanduser(
-    "~/.config/session-dashboard/launchers.json")
+    "~/.config/tilemux/launchers.json")
 DEFAULT_LAUNCHERS = [
     {"id": "claude", "label": "Claude", "command": "claude"},
     {"id": "claude-skip", "label": "Claude (skip-perms)",
